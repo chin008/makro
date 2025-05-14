@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- secrets_v1_mysecret.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples
