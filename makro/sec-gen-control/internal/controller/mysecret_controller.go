@@ -43,6 +43,8 @@ type MySecretReconciler struct {
 // +kubebuilder:rbac:groups=secrets.chinsecretgen.com,resources=mysecrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=secrets.chinsecretgen.com,resources=mysecrets/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=secrets.chinsecretgen.com,resources=mysecrets/finalizers,verbs=update
+// +kubebuilder:rbac:groups=core,resources=secrets,verbs=create;update;patch;get;list;delete
+// +kubebuilder:rbac:groups=core,resources=secrets/status,verbs=get;update;patch
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
