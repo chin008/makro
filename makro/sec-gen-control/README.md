@@ -55,7 +55,7 @@ metadata:
 spec:
   secretType: basic-auth
   username: admin
-  passwordLength: 40
+  passwordLength: 40      #as per ask
   rotationPeriod: 1m
   ```
 
