@@ -18,7 +18,7 @@ Kind – for spinning up a local K8s cluster
 
 
 ## project structure
-
+```sh
 sec-gen-control/
 ├── config/             # CRDs, RBAC, Example
 │   ├── crd/
@@ -34,7 +34,7 @@ sec-gen-control/
 ├── Makefile            # Make build and push
 ├── go.mod              # Go dependencies
 ├── README.md    
-
+```
 ### Custom Resource: MySecret
 ### A MySecret is a custom Kubernetes resource that defines:
 username: static user name to inject into the Secret
