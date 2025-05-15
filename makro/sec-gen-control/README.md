@@ -4,6 +4,7 @@ The Secret Generator Controller (sec-gen-control) is a Kubernetes operator built
 It ensures password security by rotating credentials at a specified interval—fully automated, secure, and cluster-native.
 
 ### Prerequisites
+```sh
 ✅ System Requirements used here
 Go: v1.21 
 Docker: v20+ 
@@ -14,6 +15,7 @@ Make: GNU Make (for build/deployment tasks)
 Cluster access with kubectl configured (~/.kube/config)
 Permissions to install CRDs, create namespaces, and manage RBAC resources
 Kind – for spinning up a local K8s cluster
+```
 
 
 
