@@ -1,10 +1,36 @@
 # sec-gen-control
-// TODO(user): Add simple overview of use/purpose
+The MySecret Controller watches MySecret custom resources and ensures a corresponding Kubernetes Secret is created and updated with generated credentials. The controller supports automatic secret rotation based on a configurable rotation period.
 
 ## Description
 // TODO(user): An in-depth paragraph about your project and overview of use
 
-## Getting Started
+## Project structures 
+
+sec-gen-control/
+├── config/
+│   ├── crd/
+│   │   └── bases/
+│   ├── rbac/
+│   │   └── role.yaml
+│   ├── samples/
+│   │   └── secrets_v1_mysecret.yaml
+│   ├── default/
+│   │   ├── kustomization.yaml
+│   │   └── manager_auth_proxy_patch.yaml
+├── controllers/
+│   └── mysecret_controller.go
+├── api/
+│   └── v1/
+│       ├── mysecret_types.go
+│       ├── groupversion_info.go
+│       └── zz_generated.deepcopy.go
+├── Dockerfile
+├── Makefile
+├── examples/
+│   └── mysecret.yaml
+├── README.md
+├── go.mod
+└── go.sum
 
 ### Prerequisites
 - go version v1.23.0+
