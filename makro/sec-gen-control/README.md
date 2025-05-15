@@ -50,12 +50,13 @@ rotationPeriod: how often the password should be rotated
 apiVersion: secrets.chinsecretgen.com/v1
 kind: MySecret
 metadata:
-  name: my-db-secret
+  name: my-generated-secret
   namespace: default
 spec:
-  username: dbadmin
-  passwordLength: 18
-  rotationPeriod: 24h
+  secretType: basic-auth
+  username: admin
+  passwordLength: 40
+  rotationPeriod: 1m
   ```
 
 A Secret named my-generated-secret-generated will be created in the default namespace.
