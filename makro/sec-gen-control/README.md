@@ -1,108 +1,142 @@
 # sec-gen-control
-The MySecret Controller watches MySecret custom resources and ensures a corresponding Kubernetes Secret is created and updated with generated credentials. The controller supports automatic secret rotation based on a configurable rotation period.
+The Secret Generator Controller (sec-gen-control) is a Kubernetes operator built with Kubebuilder that automatically generates and rotates Kubernetes Secrets based on a declarative MySecret custom resource.
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
-
-## Project structures 
-
-sec-gen-control/
-├── config/
-│   ├── crd/
-│   │   └── bases/
-│   ├── rbac/
-│   │   └── role.yaml
-│   ├── samples/
-│   │   └── secrets_v1_mysecret.yaml
-│   ├── default/
-│   │   ├── kustomization.yaml
-│   │   └── manager_auth_proxy_patch.yaml
-├── controllers/
-│   └── mysecret_controller.go
-├── api/
-│   └── v1/
-│       ├── mysecret_types.go
-│       ├── groupversion_info.go
-│       └── zz_generated.deepcopy.go
-├── Dockerfile
-├── Makefile
-├── examples/
-│   └── mysecret.yaml
-├── README.md
-├── go.mod
-└── go.sum
+It ensures password security by rotating credentials at a specified interval—fully automated, secure, and cluster-native.
 
 ### Prerequisites
-- go version v1.23.0+
-- docker version 17.03+.
-- kubectl version v1.11.3+.
-- Access to a Kubernetes v1.11.3+ cluster.
+✅ System Requirements used here
+Go: v1.21 
+Docker: v20+ 
+Kustomize: v5.0+
+Kubectl: 
+Make: GNU Make (for build/deployment tasks)
+✅ Kubernetes Requirements
+Cluster access with kubectl configured (~/.kube/config)
+Permissions to install CRDs, create namespaces, and manage RBAC resources
+Kind – for spinning up a local K8s cluster
 
-### To Deploy on the cluster
-**Build and push your image to the location specified by `IMG`:**
 
-```sh
-make docker-build docker-push IMG=<some-registry>/sec-gen-control:tag
-```
 
-**NOTE:** This image ought to be published in the personal registry you specified.
-And it is required to have access to pull the image from the working environment.
-Make sure you have the proper permission to the registry if the above commands don’t work.
+## project structure
 
-**Install the CRDs into the cluster:**
+sec-gen-control/
+├── config/             # CRDs, RBAC, Example
+│   ├── crd/
+│   ├── rbac/
+│   ├── samples/
+│   └── default/
+├── controllers/        # Main logic
+│   └── mysecret_controller.go
+├── api/                # CRD definitions
+│   └── v1/
+├── examples/           # Example MySecret CRs
+├── Dockerfile          # Docker build
+├── Makefile            # Make build and push
+├── go.mod              # Go dependencies
+├── README.md    
 
-```sh
-make install
-```
-
-**Deploy the Manager to the cluster with the image specified by `IMG`:**
-
-```sh
-make deploy IMG=<some-registry>/sec-gen-control:tag
-```
-
-> **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
-privileges or be logged in as admin.
-
-**Create instances of your solution**
-You can apply the samples (examples) from the config/sample:
-
-```sh
-kubectl apply -k config/samples/
-```
-
->**NOTE**: Ensure that the samples has default values to test it out.
-
-### To Uninstall
-**Delete the instances (CRs) from the cluster:**
+### Custom Resource: MySecret
+### A MySecret is a custom Kubernetes resource that defines:
+username: static user name to inject into the Secret
+passwordLength: how long the generated password should be
+rotationPeriod: how often the password should be rotated
 
 ```sh
-kubectl delete -k config/samples/
+apiVersion: secrets.chinsecretgen.com/v1
+kind: MySecret
+metadata:
+  name: my-db-secret
+  namespace: default
+spec:
+  username: dbadmin
+  passwordLength: 18
+  rotationPeriod: 24h
+  ```
+
+A Secret named my-generated-secret-generated will be created in the default namespace.
+
+
+
+Getting Started
+### Initialize the Project with Kubebuilder
+```sh
+kubebuilder init --domain chinsecretgen.com --repo github.com/chin008/makro/sec-gen-control
+```
+Initializes the controller project with domain chinsecretgen.com and Go module repo.
+
+### Create API and Controller
+```sh
+kubebuilder create api --group secrets --version v1 --kind MySecret --controller --resource
+```
+Generates the MySecret CRD and a controller scaffold.
+
+### Generate CRDs and Manifests
+```sh
+make manifests  make generates
+```
+### For local build
+```sh
+make install make build
 ```
 
-**Delete the APIs(CRDs) from the cluster:**
+Generates the CRDs in config/crd/ and webhook + RBAC configuration files.
+
+### Build and Push Docker Image
+```sh
+make docker-build IMG=chinmay009/sec-gen-control:latest
+```
+Builds Docker image with the controller logic.
 
 ```sh
-make uninstall
+make docker-push IMG=chinmay009/sec-gen-control:latest
 ```
+Pushes the image to Docker Hub or your registry.
 
-**UnDeploy the controller from the cluster:**
-
+### Deploy the Controller to Kubernetes
 ```sh
-make undeploy
+make deploy IMG=chinmay009/sec-gen-control:latest
 ```
+Deploys the controller along with RBAC and CRDs to the cluster using Kustomize.
 
-## Project Distribution
-
-Following the options to release and provide this solution to the users.
-
-### By providing a bundle with all YAML files
-
-1. Build the installer for the image built and published in the registry:
-
+### Verifying Deployment
+### Confirm the CRD Exists
 ```sh
-make build-installer IMG=<some-registry>/sec-gen-control:tag
+kubectl get crd mysecrets.secrets.chinsecretgen.com
 ```
+Ensures that your CRD is registered in the cluster.
+
+### Confirm Controller is Running
+```sh
+kubectl get pods -n sec-gen-control-system
+```
+Lists pods running in the controller's namespace.
+```sh
+kubectl describe pod -n sec-gen-control-system | less
+```
+Check logs/events for success or issues.
+
+### Sample CR Example
+Apply a MySecret example CR:
+```sh
+kubectl apply -f config/samples/secrets_v1_mysecret.yaml
+```
+
+This instructs the controller to generate a Kubernetes Secret based on the MySecret spec.
+
+### View Generated Secret
+```sh
+kubectl get secrets -n default
+Lists secrets in the default namespace.
+
+kubectl describe secret my-generated-secret-generated -n default
+Details of the generated secret (metadata only).
+
+kubectl get secret my-generated-secret-generated -n default -o yaml
+Full YAML output of the secret including encoded credentials
+```
+
+
+
 
 **NOTE:** The makefile target mentioned above generates an 'install.yaml'
 file in the dist directory. This file contains all the resources built
@@ -118,7 +152,7 @@ the project, i.e.:
 kubectl apply -f https://raw.githubusercontent.com/<org>/sec-gen-control/<tag or branch>/dist/install.yaml
 ```
 
-### By providing a Helm Chart
+### By providing a Helm Chart  (Optional)  not
 
 1. Build the chart using the optional helm plugin
 
@@ -142,20 +176,4 @@ is manually re-applied afterwards.
 **NOTE:** Run `make help` for more information on all potential `make` targets
 
 More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
-
-## License
-
-Copyright 2025.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 
