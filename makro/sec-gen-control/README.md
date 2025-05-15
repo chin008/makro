@@ -17,7 +17,10 @@ Permissions to install CRDs, create namespaces, and manage RBAC resources
 Kind – for spinning up a local K8s cluster
 ```
 
-
+### Record the successful execution of the controller via Asciinema
+```sh
+/makro/sec-gen-control/mydemo.cast
+```
 
 ## project structure
 ```sh
