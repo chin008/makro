@@ -1,0 +1,12 @@
+apiVersion: slack.chinslacknote.com/v2
+kind: SlackNotification
+metadata:
+  name: slacknotification-sample
+spec:
+  namespace: default
+  eventTypes:
+    - Warning
+  reasons:
+    - CrashLoopBackOff
+    - ImagePullBackOff
+  slackWebhook: "https://hooks.slack.com/services/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"

@@ -1,0 +1,9 @@
+apiVersion: slack.chinslacknote.com/v2
+kind: SlackNotification
+metadata:
+  labels:
+    app.kubernetes.io/name: slack-notification
+    app.kubernetes.io/managed-by: kustomize
+  name: slacknotification-sample
+spec:
+  # TODO(user): Add fields here

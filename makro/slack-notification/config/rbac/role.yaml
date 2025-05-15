@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - slack.chinslacknote.com
+  resources:
+  - slacknotifications
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - slack.chinslacknote.com
+  resources:
+  - slacknotifications/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - slack.chinslacknote.com
+  resources:
+  - slacknotifications/status
+  verbs:
+  - get
+  - patch
+  - update
